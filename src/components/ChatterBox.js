@@ -5,13 +5,14 @@ import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
+import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ChatIcon from '@mui/icons-material/Chat';
 import UploadJSONToS3 from './JSONUpload';
 
-const ChatterBox = ({ chatMem, setRefresh, setChatMem, chatQuestion, setChatQuestion, selectedProperty, handleSubmit }) => {
+const ChatterBox = ({ chatMem, setRefresh, querying, chatQuestion, setChatQuestion, selectedProperty, handleSubmit }) => {
   const [ show, setShow ] = React.useState(false);
 
   if (!selectedProperty.title ) {
@@ -85,6 +86,7 @@ const ChatterBox = ({ chatMem, setRefresh, setChatMem, chatQuestion, setChatQues
          {chatMem.map((c, m) => <ChatText key={m} {...c} />)}
          </Box> 
 
+          {!!querying && <LinearProgress />}
 
       <form onSubmit={handleSubmit}  >
       <TextField   

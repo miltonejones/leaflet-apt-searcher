@@ -13,7 +13,7 @@ AWS.config.update(AWS_CONFIG);
 
 const s3 = new AWS.S3();
 
-const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, jsonList, setJsonList }) => { 
+const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, selected, jsonList, setJsonList }) => { 
 
   useEffect(() => {
     const fetchJsonFiles = async () => {
@@ -44,7 +44,22 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, jsonList, setJsonLi
             })
           );
 
-          setJsonList(jsonObjects);
+          let label = ''
+          const sortedFiles = jsonObjects
+            .sort(( a,b ) => a.city < b.city ? 1 : -1)
+            .reduce((out, item) => {
+              if (item.city !== label) {
+                label = item.city
+                out.push({
+                  label
+                })
+              }
+              out.push(item)
+              return out;
+        
+            }, [])
+
+          setJsonList(sortedFiles);
         }
       } catch (error) {
         console.error('Error fetching JSON files:', error);
@@ -54,20 +69,7 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, jsonList, setJsonLi
     fetchJsonFiles();
   }, [refresh]);
 
-  let label = ''
-  const sortedFiles = jsonList
-    .sort(( a,b ) => a.city < b.city ? 1 : -1)
-    .reduce((out, item) => {
-      if (item.city !== label) {
-        label = item.city
-        out.push({
-          label
-        })
-      }
-      out.push(item)
-      return out;
-
-    }, [])
+ 
 
   return (
     <Card  sx={{
@@ -75,23 +77,24 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, jsonList, setJsonLi
     }}> 
       <Autocomplete
         size="small"
-        options={sortedFiles}
+        value={selected}
+        options={jsonList}
         renderOption={(props, option) => (
           <div {...props} sx={{
             textAlign: 'left',
             alignItems: 'flex-start',
             justifyContent: 'flex-start'
           }}>
-          { !!option.address &&  <>{option.favorite ? '❤️' : ''} {option.address}</>}
+          { !!option.address &&  <>{option.favorite ? '❤️' : ''} {option.address.substr(0, 40)}</>}
            {!!option.label && <div style={{ color: 'gray' }}>{option.label}</div>}
           </div>
         )}
-        getOptionLabel={(option) => option.address}
+        getOptionLabel={(option) => option.address || 'select a property'}
         onChange={(event, value) => !!value.address && onChange(value)}
         renderInput={(params) => <TextField sx={{
           // maxWidth: 300,
           width: `calc(100vw - 100px)`
-        }} size="small" {...params} label="Select an address" />}
+        }} size="small" {...params} label="Select a listing" />}
       />
  
       {/* <UploadJSONToS3 onComplete={(location) => {

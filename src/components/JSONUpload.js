@@ -6,10 +6,9 @@ import AddIcon from '@mui/icons-material/Add';
 import { AWS_CONFIG } from '../config';
 
 const S3_BUCKET = 'aptjson';
-
 AWS.config.update(AWS_CONFIG); 
-
 const s3 = new AWS.S3();
+
 
 const UploadJSONToS3 = ({ onComplete }) => {
   const [selectedFile, setSelectedFile] = useState(null);

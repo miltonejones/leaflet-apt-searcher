@@ -2,6 +2,8 @@ import React from 'react';
 
 import Skeleton from '@mui/material/Skeleton'; 
 import Typography from '@mui/material/Typography'; 
+import Stack from '@mui/material/Stack'; 
+import { Link } from '@mui/material';
 
 import {
   Polyline,
@@ -23,6 +25,7 @@ import rotterdamStations from './json/rotterdam_stations_geo.json';
 import S3JsonAutocomplete from './components/S3JsonAutocomplete';
 import ImageUploader from './components/ImageUploader';
 import ChatterBox from './components/ChatterBox';
+import FavoritesLink from './components/FavoritesLink';
 
 const redMarkerIcon = color => new L.Icon({
   iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
@@ -64,9 +67,10 @@ const MapMarkers = ({ items, onChange, onUpdate }) => {
             <Typography sx={{ cursor: 'pointer' }} variant="subtitle2" onClick={() => onChange(station)}
             > {station.favorite ? '❤️' : ''}  {station.address}</Typography>
             <Typography   variant="caption"  > {station.rentalDetails.rentPrice}</Typography>
-           <div>
-            <a target="_blank" href={station.url}>Open Listing</a> 
-           </div>
+           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <Link target="_blank" href={station.url}>Open Listing</Link> 
+            <FavoritesLink jsonData={station} filename="" onChange={onUpdate} />
+           </Stack>
             </Popup>
           </Marker>
         )) }
@@ -121,6 +125,7 @@ export default function App() {
   const [city, setCity] = useState('Rotterdam');
   const [center, setCenter] = useState([]);
   const [busy, setBusy] = useState(false);
+  const [querying, setQuerying] = useState(false);
   const [zoom, setZoom] = useState(12);
   const [chatQuestion, setChatQuestion] = useState()
   const [chatMem, setChatMem] = useState([])
@@ -165,17 +170,18 @@ export default function App() {
     const { image, ...rest } = selectedProperty; 
     const chat = create(chatQuestion)
     const query = [defineSys(rest), ...chatMem, chat];
-    setChatQuestion("")
-    setChatMem(c => [...c, chat]) 
+    setChatQuestion("") 
+    setChatMem(c => [...c, chat]) ;
+    setQuerying(true)
     const res = await generateText(query, 512); 
-    const answer = res.choices[0].message; 
-    setChatMem(c => [...c, answer]) 
-
+    const answer = res.choices[0].message;  
+    setQuerying(false)
+    setChatMem(c => [...c, answer])  
   };
 
   const chatProps = {
     chatMem, setChatMem, chatQuestion, setChatQuestion, selectedProperty, handleSubmit ,
-    setRefresh
+    setRefresh, querying
   }
 
   return (
@@ -193,10 +199,26 @@ export default function App() {
   
       <S3JsonAutocomplete onChange={value => { 
         setProp(value)
-      }} jsonList={jsonList} setJsonList={setJsonList} refresh={refresh} setRefresh={setRefresh}  />
+      }} jsonList={jsonList} 
+      selected={selectedProperty}
+      setJsonList={setJsonList} refresh={refresh} setRefresh={setRefresh}  />
     </div>
 
    {!!busy && <Skeleton variant="rectangular"   style={{ width: '100%', height: '100%' }}/>}
+
+   {!center.length && !busy && <Stack
+      sx={{
+        position: 'absolute',
+        top: 80
+      }}
+    >
+      <Typography sx={{ mb: 2 }}>Select a property to continue:</Typography>
+      {jsonList.map(item => <Typography
+        sx={{ cursor: 'pointer', mb: 1 }}
+        onClick={() => !!item.address && setProp(item)}
+        variant={!item.address ? 'subtitle2' : 'body2'}
+        >{item.favorite ? '❤️' : ''} {item.address || item.label}</Typography>)}
+    </Stack>}
 
    {!!center.length && !busy && <MapContainer
       center={center}
