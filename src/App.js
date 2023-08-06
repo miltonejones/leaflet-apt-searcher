@@ -78,8 +78,7 @@ const MapLine = ({ color, lineData }) => {
   const polyline = Object.keys(lineData).map((key) => [
     lineData[key].lat,
     lineData[key].long,
-  ]);
-  console.log({ polyline, lineData });
+  ]); 
   return (
     <>
       {Object.keys(lineData).map((key) => (
