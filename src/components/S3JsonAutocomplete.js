@@ -89,8 +89,8 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, selected, jsonList,
            {!!option.label && <div style={{ color: 'gray' }}>{option.label}</div>}
           </div>
         )}
-        getOptionLabel={(option) => option.address || 'select a property'}
-        onChange={(event, value) => !!value.address && onChange(value)}
+        getOptionLabel={(option) => option?.address || 'select a property'}
+        onChange={(event, value) => !!value?.address && onChange(value)}
         renderInput={(params) => <TextField sx={{
           // maxWidth: 300,
           width: `calc(100vw - 100px)`

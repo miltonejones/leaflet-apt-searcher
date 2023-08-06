@@ -48,7 +48,13 @@ const ImageUploader = ({ onChange, object }) => {
 
   return (
     <div>
-      {!object.image && <input ref={ref} type="file" accept="image/*" onChange={handleFileChange} />}
+      {!object.image && <input ref={ref} type="file" style={{
+        display: 'none'
+      }} accept="image/*" onChange={handleFileChange} />}
+      {!object.image && <img onClick={() => ref.current.click()} src={`${createImage()}`} alt="Uploaded" style={{
+        width: '100%',
+        minWidth: 240
+      }} />}
       {object.image && <img onClick={() => ref.current.click()} src={`data:image/jpeg;base64,${object.image}`} alt="Uploaded" style={{
         width: '100%',
         minWidth: 240
@@ -58,3 +64,27 @@ const ImageUploader = ({ onChange, object }) => {
 };
 
 export default ImageUploader;
+
+// Function to draw the text in the center of the canvas
+function drawTextOnCanvas(canvas, text) {
+  var ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#000"; // Text color
+  ctx.font = "20px Arial"; // Font size and style
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  // Calculate the center position of the canvas
+  var x = canvas.width / 2;
+  var y = canvas.height / 2;
+
+  // Draw the text in the center
+  ctx.fillText(text, x, y);
+}
+
+// Function to create the image with the text
+function createImage() {
+  var canvas = document.createElement("canvas");
+  drawTextOnCanvas(canvas, "Click here to add a photo");
+
+  return canvas.toDataURL("image/png"); 
+}
