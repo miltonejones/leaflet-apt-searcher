@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import AWS from 'aws-sdk';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+import Fab from '@mui/material/Fab'; 
+import AddIcon from '@mui/icons-material/Add';
 import { AWS_CONFIG } from '../config';
 
 const S3_BUCKET = 'aptjson';
@@ -55,9 +56,9 @@ const UploadJSONToS3 = ({ onComplete }) => {
   return (
     <Stack direction="row" spacing={1}> 
       <input ref={ref} style={{ display: "none" }} type="file" multiple accept=".json" onChange={handleFileChange} />
-      <Button size="small" variant='contained' onClick={() => {
+      <Fab size="small" variant='contained' onClick={() => {
         ref.current.click()
-      }}>add</Button>
+      }}><AddIcon /></Fab>
     </Stack>
   );
 };

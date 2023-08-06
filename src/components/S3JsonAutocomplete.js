@@ -89,7 +89,8 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, jsonList, setJsonLi
         getOptionLabel={(option) => option.address}
         onChange={(event, value) => !!value.address && onChange(value)}
         renderInput={(params) => <TextField sx={{
-          minWidth: 400
+          // maxWidth: 300,
+          width: `calc(100vw - 100px)`
         }} size="small" {...params} label="Select an address" />}
       />
  

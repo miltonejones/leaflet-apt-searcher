@@ -174,7 +174,8 @@ export default function App() {
   };
 
   const chatProps = {
-    chatMem, setChatMem, chatQuestion, setChatQuestion, selectedProperty, handleSubmit 
+    chatMem, setChatMem, chatQuestion, setChatQuestion, selectedProperty, handleSubmit ,
+    setRefresh
   }
 
   return (

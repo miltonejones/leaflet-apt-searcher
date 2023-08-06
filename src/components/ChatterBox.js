@@ -9,9 +9,10 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ChatIcon from '@mui/icons-material/Chat';
+import UploadJSONToS3 from './JSONUpload';
 
-const ChatterBox = ({ chatMem, setChatMem, chatQuestion, setChatQuestion, selectedProperty, handleSubmit }) => {
-  const [ show, setShow ] = React.useState(true);
+const ChatterBox = ({ chatMem, setRefresh, setChatMem, chatQuestion, setChatQuestion, selectedProperty, handleSubmit }) => {
+  const [ show, setShow ] = React.useState(false);
 
   if (!selectedProperty.title ) {
     return <i />
@@ -24,6 +25,17 @@ const ChatterBox = ({ chatMem, setChatMem, chatQuestion, setChatQuestion, select
   return (
    
     <>
+
+    <Box sx={{
+        zIndex: 2000,
+        position: 'fixed',
+        bottom: show ? -1000 : 100,
+        transition: 'all 0.3s linear',
+        right: 18,  
+    }}>
+      <UploadJSONToS3 onComplete={() => setRefresh(new Date().toString())} />
+    </Box>
+
     <Box sx={{
         zIndex: 2000,
         position: 'fixed',
