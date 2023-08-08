@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
+import AWS from 'aws-sdk';
 import { AWS_CONFIG } from '../config';
 
 const S3_BUCKET = 'aptjson'; 
@@ -8,7 +8,7 @@ AWS.config.update(AWS_CONFIG);
 
 const s3 = new AWS.S3();
 
-const ImageUploader = ({ onChange, object }) => {
+const ImageUploader = ({ onChange, onClick, object }) => {
   const ref = React.useRef()
   const [image, setImage] = useState(null);
 
@@ -48,15 +48,22 @@ const ImageUploader = ({ onChange, object }) => {
 
   return (
     <div>
-      {!object.image && <input ref={ref} type="file" style={{
+      <input ref={ref} type="file" style={{
         display: 'none'
-      }} accept="image/*" onChange={handleFileChange} />}
+      }} accept="image/*" onChange={handleFileChange} />
       {!object.image && <img onClick={() => ref.current.click()} src={`${createImage()}`} alt="Uploaded" style={{
         width: '100%',
+        aspectRatio: '16 / 9',
         minWidth: 240
       }} />}
-      {object.image && <img onClick={() => ref.current.click()} src={`data:image/jpeg;base64,${object.image}`} alt="Uploaded" style={{
+      {object.image && <img onClick={() => {
+
+        if (onClick) return onClick()
+        ref.current.click()
+
+      }} src={`data:image/jpeg;base64,${object.image}`} alt="Uploaded" style={{
         width: '100%',
+        aspectRatio: '16 / 9',
         minWidth: 240
       }} />}
     </div>
@@ -66,10 +73,10 @@ const ImageUploader = ({ onChange, object }) => {
 export default ImageUploader;
 
 // Function to draw the text in the center of the canvas
-function drawTextOnCanvas(canvas, text) {
+function drawTextOnCanvas(canvas, text, size) {
   var ctx = canvas.getContext("2d");
   ctx.fillStyle = "#000"; // Text color
-  ctx.font = "20px Arial"; // Font size and style
+  ctx.font = size + "px Arial"; // Font size and style
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
@@ -82,9 +89,9 @@ function drawTextOnCanvas(canvas, text) {
 }
 
 // Function to create the image with the text
-function createImage() {
+export const createImage = (text = "Click here to add a photo", size = 14) => {
   var canvas = document.createElement("canvas");
-  drawTextOnCanvas(canvas, "Click here to add a photo");
+  drawTextOnCanvas(canvas, text, size);
 
   return canvas.toDataURL("image/png"); 
 }

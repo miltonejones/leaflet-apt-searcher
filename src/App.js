@@ -26,6 +26,8 @@ import S3JsonAutocomplete from './components/S3JsonAutocomplete';
 import ImageUploader from './components/ImageUploader';
 import ChatterBox from './components/ChatterBox';
 import FavoritesLink from './components/FavoritesLink';
+import DeleteListingComponent from './components/ListingDelete';
+import PropertyList, { PropertyGrid } from './components/PropertyList';
 
 const redMarkerIcon = color => new L.Icon({
   iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
@@ -69,7 +71,8 @@ const MapMarkers = ({ items, onChange, onUpdate }) => {
             <Typography   variant="caption"  > {station.rentalDetails.rentPrice}</Typography>
            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <Link target="_blank" href={station.url}>Open Listing</Link> 
-            <FavoritesLink jsonData={station} filename="" onChange={onUpdate} />
+            <FavoritesLink jsonData={station} onChange={onUpdate} />
+            <DeleteListingComponent filename={station.fileName} onChange={onUpdate}  />
            </Stack>
             </Popup>
           </Marker>
@@ -183,6 +186,7 @@ export default function App() {
     chatMem, setChatMem, chatQuestion, setChatQuestion, selectedProperty, handleSubmit ,
     setRefresh, querying
   }
+  
 
   return (
    <>
@@ -206,19 +210,11 @@ export default function App() {
 
    {!!busy && <Skeleton variant="rectangular"   style={{ width: '100%', height: '100%' }}/>}
 
-   {!center.length && !busy && <Stack
-      sx={{
-        position: 'absolute',
-        top: 80
-      }}
-    >
-      <Typography sx={{ mb: 2 }}>Select a property to continue:</Typography>
-      {jsonList.map(item => <Typography
-        sx={{ cursor: 'pointer', mb: 1 }}
-        onClick={() => !!item.address && setProp(item)}
-        variant={!item.address ? 'subtitle2' : 'body2'}
-        >{item.favorite ? '❤️' : ''} {item.address || item.label}</Typography>)}
-    </Stack>}
+    <PropertyGrid visible={!center.length && !busy} 
+      onUpdate={() => setRefresh(new Date().toString())}
+      properties={jsonList} itemClicked={setProp}
+      />
+ 
 
    {!!center.length && !busy && <MapContainer
       center={center}
