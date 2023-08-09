@@ -55,7 +55,7 @@ export const PropertyGrid = ({ visible, properties, itemClicked, onUpdate }) => 
                 <Stack direction="row" spacing={2}>
                   {!item.label && (
                     <>
-                    <Link target="_blank" href={item.url}>Open Listing</Link>
+                    <Link target="_blank" href={item.url}>View</Link>
                   <DeleteListingComponent filename={item.fileName} onChange={onUpdate}  />
                     </>
                   ) }

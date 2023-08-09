@@ -79,7 +79,7 @@ export const ListingImages = ({ on, listings, onChange, selectedListing }) => {
   const [index, setIndex] = React.useState(initialIndex);
   const [startX, setStartX] = React.useState(0);
 
-  const left = (index + 1) * 100;
+  const left = (index + 1) * 180;
   const halfViewportSize = (window.innerWidth / 2) - left;
 
   const handleTouchStart = (e) => {
