@@ -13,7 +13,7 @@ AWS.config.update(AWS_CONFIG);
 
 const s3 = new AWS.S3();
 
-const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, selected, jsonList, setJsonList }) => { 
+const S3JsonAutocomplete = ({ onChange, refresh, setProgress, selected, jsonList, setJsonList }) => { 
 
   useEffect(() => {
     const fetchJsonFiles = async () => {
@@ -26,7 +26,7 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, selected, jsonList,
 
         if (data.Contents) {
           const fileList = data.Contents.map((file) => file.Key);
-
+          let e = 0;
           const jsonObjects = await Promise.all(
             fileList.map(async (fileName) => {
               const jsonParams = {
@@ -35,6 +35,7 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, selected, jsonList,
               };
 
               const jsonData = await s3.getObject(jsonParams).promise();
+              setProgress((++e / fileList.length) * 100)
               const jsonObject = JSON.parse(jsonData.Body.toString());
               return {
                 ...jsonObject,
@@ -60,6 +61,7 @@ const S3JsonAutocomplete = ({ onChange, refresh, setRefresh, selected, jsonList,
             }, [])
 
           setJsonList(sortedFiles);
+          setProgress(0)
         }
       } catch (error) {
         console.error('Error fetching JSON files:', error);

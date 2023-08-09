@@ -19,16 +19,14 @@ export const PropertyGrid = ({ visible, properties, itemClicked, onUpdate }) => 
   return (
     <>
       {!!visible && 
-        <Grid container spacing={2} sx={{ position: 'absolute', top: 80, width: 'calc(100vw - 16px)' }}>
-          {/* <Grid item xs={12}>
-            <Typography sx={{ mb: 2 }}>Select a property to continue:</Typography>  
-          </Grid> */}
+        <Grid container spacing={2} sx={{ p: 2, position: 'absolute', top: 80, width: 'calc(100vw - 16px)' }}>
+      
 
           {properties.map(item => (
             <Grid item xs={!!item.label?12:6} sm={!!item.label?12:4} md={!!item.label?12:3} key={item.id}>
               <Stack>
                   
-                {!item.label && <ImageUploader object={item} onChange={onUpdate}   onClick={() => !!item.address && itemClicked(item)}/>}
+                {!item.label && <ImageUploader object={item} onChange={onUpdate}   onClick={() => !!item.address && itemClicked(item)} />}
 
                 {!!item.label && <Typography variant="h6">{item.label}</Typography>}
 
@@ -64,7 +62,6 @@ export const PropertyGrid = ({ visible, properties, itemClicked, onUpdate }) => 
                 </Stack>
 
               </Stack>
-
             </Grid>
           ))}
 

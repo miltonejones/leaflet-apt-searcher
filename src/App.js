@@ -3,7 +3,7 @@ import React from 'react';
 import Skeleton from '@mui/material/Skeleton'; 
 import Typography from '@mui/material/Typography'; 
 import Stack from '@mui/material/Stack'; 
-import { Link } from '@mui/material';
+import { LinearProgress, Link } from '@mui/material';
 
 import {
   Polyline,
@@ -28,6 +28,7 @@ import ChatterBox from './components/ChatterBox';
 import FavoritesLink from './components/FavoritesLink';
 import DeleteListingComponent from './components/ListingDelete';
 import PropertyList, { PropertyGrid } from './components/PropertyList';
+import './style.css'
 
 const redMarkerIcon = color => new L.Icon({
   iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
@@ -65,7 +66,7 @@ const MapMarkers = ({ items, onChange, onUpdate }) => {
             ]}
           >
             <Popup open>
-              <ImageUploader object={station} onChange={onUpdate} /> 
+              <ImageUploader object={station} onChange={onUpdate}  onClick={() => !!station.address && onChange(station)}  /> 
             <Typography sx={{ cursor: 'pointer' }} variant="subtitle2" onClick={() => onChange(station)}
             > {station.favorite ? '❤️' : ''}  {station.address}</Typography>
             <Typography   variant="caption"  > {station.rentalDetails.rentPrice}</Typography>
@@ -129,9 +130,10 @@ export default function App() {
   const [center, setCenter] = useState([]);
   const [busy, setBusy] = useState(false);
   const [querying, setQuerying] = useState(false);
-  const [zoom, setZoom] = useState(12);
+  const [zoom, setZoom] = useState(15);
   const [chatQuestion, setChatQuestion] = useState()
   const [chatMem, setChatMem] = useState([])
+  const [progress, setProgress] = useState(0)
  
   const [chosenProps, setChosenProps] = React.useState([])
 
@@ -190,6 +192,8 @@ export default function App() {
 
   return (
    <>
+     {!!progress && <LinearProgress variant="determinate" value={progress}/>}
+
     <div style={{
       display: 'flex',
       flexDirection: 'row',
@@ -205,6 +209,7 @@ export default function App() {
         setProp(value)
       }} jsonList={jsonList} 
       selected={selectedProperty}
+      setProgress={setProgress}
       setJsonList={setJsonList} refresh={refresh} setRefresh={setRefresh}  />
     </div>
 

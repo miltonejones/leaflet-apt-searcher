@@ -6,8 +6,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Stack from '@mui/material/Stack';
 import AWS from 'aws-sdk';
 import { AWS_CONFIG } from '../config';
+import { Typography } from '@mui/material';
 
 const S3_BUCKET = 'aptjson'; 
 AWS.config.update(AWS_CONFIG); 
@@ -59,8 +61,11 @@ const DeleteListingComponent = ({ onChange, filename }) => {
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this listing?
-            {filename}
+            <Stack>
+            
+            <Typography>Are you sure you want to delete this listing?</Typography>
+            <Typography variant='caption'>{filename}</Typography>
+            </Stack>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
