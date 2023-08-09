@@ -11,9 +11,12 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ChatIcon from '@mui/icons-material/Chat';
 import UploadJSONToS3 from './JSONUpload';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 
 const ChatterBox = ({ chatMem, setRefresh, querying, chatQuestion, setChatQuestion, selectedProperty, handleSubmit }) => {
   const [ show, setShow ] = React.useState(false);
+  const [ speak, setSpeak ] = React.useState(true);
 
   if (!selectedProperty.title ) {
     return <i />
@@ -89,8 +92,38 @@ const ChatterBox = ({ chatMem, setRefresh, querying, chatQuestion, setChatQuesti
           {!!querying && <LinearProgress />}
 
       <form onSubmit={handleSubmit}  >
+
+
+      <TextField
+        autoComplete="off"
+        fullWidth
+        onChange={(e) => {
+          setChatQuestion(e.target.value);
+        }}
+        value={chatQuestion}
+        sx={{
+          minWidth: 360,
+        }}
+        size="small"
+        placeholder={`Ask me anything about ${selectedProperty.address}`}
+        InputProps={{
+          endAdornment: (
+            <IconButton
+              edge="end"
+              onClick={() => {
+                setSpeak(!speak);
+              }}
+            >
+              {speak ? <VolumeUpIcon /> : <VolumeOffIcon />}
+            </IconButton>
+          ),
+        }}
+      />
+
+
+{/* 
       <TextField   
-      autoComplete='off'
+        autoComplete='off'
         fullWidth
           onChange={e => {
             setChatQuestion(e.target.value)
@@ -101,7 +134,10 @@ const ChatterBox = ({ chatMem, setRefresh, querying, chatQuestion, setChatQuesti
           }}
           size="small"
           placeholder={`Ask me anything about ${selectedProperty.address}`}
-        />
+        /> */}
+
+
+
       </form>        
       </Card>
 

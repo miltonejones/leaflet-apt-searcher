@@ -1,16 +1,12 @@
 import React from 'react';
 
-import Skeleton from '@mui/material/Skeleton'; 
-import Typography from '@mui/material/Typography'; 
-import Stack from '@mui/material/Stack'; 
-import { LinearProgress, Link } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';  
+import { LinearProgress } from '@mui/material';
 
 import {
   Polyline,
   MapContainer,
-  TileLayer,
-  Popup,
-  Marker,
+  TileLayer, 
   Circle,
   Tooltip,
 } from 'react-leaflet';
@@ -22,65 +18,12 @@ import atlataStations from './json/marta_stations_geo.json';
 import amsterdamStations from './json/metro_stations_geo.json';
 import rotterdamStations from './json/rotterdam_stations_geo.json';
   
-import S3JsonAutocomplete from './components/S3JsonAutocomplete';
-import ImageUploader from './components/ImageUploader';
-import ChatterBox from './components/ChatterBox';
-import FavoritesLink from './components/FavoritesLink';
-import DeleteListingComponent from './components/ListingDelete';
-import PropertyList, { PropertyGrid } from './components/PropertyList';
+import S3JsonAutocomplete from './components/S3JsonAutocomplete'; 
+import ChatterBox from './components/ChatterBox'; 
+import { PropertyGrid } from './components/PropertyList';
 import './style.css'
-
-const redMarkerIcon = color => new L.Icon({
-  iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+import { MapMarkers, ListingImages } from './components/MarkerPopup';
  
-
-
-const MapMarkers = ({ items, onChange, onUpdate }) => {
-
-  const colorOf = (prop) => {
-    let color;
-    if (prop.selected) {
-      color = 'green';
-    } else {
-      color = prop.favorite ? 'red' : 'grey'
-    }
-    return color;
-  }
-
-
-
-  return (
-    <>
-      {  items.map((station) => (
-          <Marker
-            key={station.name}
-            icon={redMarkerIcon(colorOf(station))}
-            position={[
-              station.lat,
-              station.lon,
-            ]}
-          >
-            <Popup open>
-              <ImageUploader object={station} onChange={onUpdate}  onClick={() => !!station.address && onChange(station)}  /> 
-            <Typography sx={{ cursor: 'pointer' }} variant="subtitle2" onClick={() => onChange(station)}
-            > {station.favorite ? '❤️' : ''}  {station.address}</Typography>
-            <Typography   variant="caption"  > {station.rentalDetails.rentPrice}</Typography>
-           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Link target="_blank" href={station.url}>Open Listing</Link> 
-            <FavoritesLink jsonData={station} onChange={onUpdate} />
-            <DeleteListingComponent filename={station.fileName} onChange={onUpdate}  />
-           </Stack>
-            </Popup>
-          </Marker>
-        )) }
-    </>
-  );
-};
 
 const MapLine = ({ color, lineData }) => {
   const polyline = Object.keys(lineData).map((key) => [
@@ -114,10 +57,11 @@ const MapLines = ({ mapLineData }) => {
   );
 };
 
-function MyComponent({ onZoom }) {
+function MyComponent({ onZoom, onClick }) {
   const map = useMapEvent('zoom', () => {
     onZoom (map.getZoom())
   })
+  const click = useMapEvent('click', onClick)
   return null
 }
 
@@ -134,6 +78,7 @@ export default function App() {
   const [chatQuestion, setChatQuestion] = useState()
   const [chatMem, setChatMem] = useState([])
   const [progress, setProgress] = useState(0)
+  const [carouselOn, setCarouselOn] = useState(true)
  
   const [chosenProps, setChosenProps] = React.useState([])
 
@@ -166,6 +111,7 @@ export default function App() {
       setBusy(false)
       setChatMem( [])
       setChatQuestion("")
+      setCarouselOn(true)
     }, 999)
 
   }
@@ -182,6 +128,7 @@ export default function App() {
     const answer = res.choices[0].message;  
     setQuerying(false)
     setChatMem(c => [...c, answer])  
+    speakText(answer.content);
   };
 
   const chatProps = {
@@ -236,7 +183,9 @@ export default function App() {
 
       <MapMarkers onChange={value => setProp(value)} items={chosenProps} onUpdate={() => setRefresh(new Date().toString())} />
 
-      <MyComponent onZoom={setZoom} />
+      <ListingImages on={carouselOn} onChange={value => setProp(value)} listings={chosenProps} selectedListing={selectedProperty}  />
+
+      <MyComponent onZoom={setZoom} onClick={() => setCarouselOn(!carouselOn)} />
     </MapContainer>}
 
     <ChatterBox {...chatProps} />
@@ -244,5 +193,23 @@ export default function App() {
 
    </>
   );
+}
+ 
+function speakText(speechText) {
+  // Check if speech synthesis is supported in the browser
+  if ('speechSynthesis' in window) {
+    // Create a new SpeechSynthesisUtterance object
+    var utterance = new SpeechSynthesisUtterance(speechText);
+    
+    // Use the default speech synthesis voice
+    utterance.voice = speechSynthesis.getVoices()[0];
+    // Set the language to US English (en-US)
+    utterance.lang = 'en-US';
+    
+    // Start speaking the text
+    speechSynthesis.speak(utterance);
+  } else {
+    console.error('Speech synthesis is not supported in this browser.');
+  }
 }
  

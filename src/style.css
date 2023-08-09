@@ -7,3 +7,28 @@ p {
 body {
   margin: 0;
 }
+
+.listing-images {
+  position: absolute;
+  bottom: 0;
+  left: 0; 
+  z-index: 2000;
+  transition: all 0.1s linear;
+}
+
+.images-container {
+  display: flex;
+  justify-content: center;
+  margin: 4px;
+}
+
+.images-container img {
+  width: 100px;
+  aspect-ratio: 16 / 9;
+  margin: 4px; 
+}
+
+.selected { 
+  outline: solid 4px red;
+  opacity: 1;
+}
